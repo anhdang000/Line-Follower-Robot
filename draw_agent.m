@@ -9,7 +9,7 @@ function [x_sensor, y_sensor] = draw_agent(x_c, y_c, width, length, phi)
     
     sensor = polyshape([x2 x2 x_c], [y1 y2 y_c]);
     sensor = rotate(sensor, phi, [x_c y_c]);
-%     plot(sensor, 'FaceColor', 'none', 'EdgeColor', 'r');
+    plot(sensor, 'FaceColor', 'none', 'EdgeColor', 'r');
     [row, ~] = find(sensor.Vertices(:, 1) ~= x_c);
     x_sensor = sensor.Vertices(row, 1);
     [row, ~] = find(sensor.Vertices(:, 2) ~= y_c);

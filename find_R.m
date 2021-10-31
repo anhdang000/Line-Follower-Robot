@@ -12,8 +12,8 @@ function [x_R, y_R, phi_R, is_exist] = find_R(x_sensor, y_sensor, x_control, y_c
     if x_control >= 1000
         % Right arc
         sol = solve(s_eqn, (x-1000)^2 + y^2 == 500^2);
-        x_R = sol.x;
-        y_R = sol.y;
+        x_R = double(sol.x);
+        y_R = double(sol.y);
         d = calc_distances([x_R y_R], [x_control, y_control]);
         [row, ~] = find(d == min(d));
         x_R = x_R(row);
@@ -21,8 +21,8 @@ function [x_R, y_R, phi_R, is_exist] = find_R(x_sensor, y_sensor, x_control, y_c
     elseif x_control <= -1000
         % Left arc
         sol = solve(s_eqn, (x+1000)^2 + y^2 == 500^2);
-        x_R = sol.x;
-        y_R = sol.y;
+        x_R = double(sol.x);
+        y_R = double(sol.y);
         d = calc_distances([x_R y_R], [x_control, y_control]);
         [row, ~] = find(d == min(d));
         x_R = x_R(row);
@@ -30,12 +30,12 @@ function [x_R, y_R, phi_R, is_exist] = find_R(x_sensor, y_sensor, x_control, y_c
     else
         if y_control > 0
             sol = solve(s_eqn, y == 500);
-            x_R = sol.x;
-            y_R = sol.y;
+            x_R = double(sol.x);
+            y_R = double(sol.y);
         else
             sol = solve(s_eqn, y == -500);
-            x_R = sol.x;
-            y_R = sol.y;
+            x_R = double(sol.x);
+            y_R = double(sol.y);
         end
     end
     

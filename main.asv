@@ -32,7 +32,6 @@ function main(v_ref)
     % response
     num_dt = 20;
     t_seq = linspace(0, t_motor, num_dt);
-    t_step = t_seq(2) - t_seq(1);
     
     % left
     kp_l = 0.02;
@@ -113,6 +112,7 @@ function main(v_ref)
         x_c_prev = x_c;
         y_c_prev = y_c;
         for i = 1:length(t_seq)
+            t_step = t_seq(i) - t_seq(i-1);
             v_l = rpm2v(deval(sol_l, t_seq(i)), wheel_radius);
             v_r = rpm2v(deval(sol_r, t_seq(i)), wheel_radius);
             [v, omega] = lr2vomega(v_l, v_r, wheel_distance);

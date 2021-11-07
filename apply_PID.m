@@ -8,6 +8,5 @@ function [sol, err2, int] = apply_PID(kp, ki, kd, err2, int, v_ref, v, t_samp, w
     PWM = double(clip(PWM, 0, 100));
     sol = ode45(@(t, N) motorPlant(t, N, PWM), [0 t_samp], n);
     [t, N] = ode45(@(t, N) motorPlant(t, N, PWM), [0 t_samp], n);
-    disp([double(n_ref), double(deval(sol, t_samp))]);
 end
 

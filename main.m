@@ -6,8 +6,10 @@ function main(v_ref)
     rbt_length = 200;
     wheel_radius = 85/2;
     wheel_distance = 170;
-    sensor_length = 133;
-
+    sensor_interval = 17;
+    n_sensors = 7;
+    load('sensor_data.mat', 'sensor_data');
+    
     % Map
     r = 500;
 
@@ -20,8 +22,8 @@ function main(v_ref)
 %     k2 = 0.000015;
 %     k3 = 14;
     k1 = 0.01;
-    k2 = 0.000017;
-    k3 = 14;
+    k2 = 0.000008;
+    k3 = 20;
     omega_ref = v_ref/r;
     n_ref = omega_ref*60/(2*pi);
     v = 0;
@@ -58,6 +60,7 @@ function main(v_ref)
     %% Initialize storages
     e1_array = [];
     e2_array = [];
+    e2_gt_array = [];
     e3_array = [];
     v_array = [];
     omega_array = [];
@@ -102,8 +105,9 @@ function main(v_ref)
         if is_exist == 0
             break
         end
-        [e1, e2, e3] = compute_error(x_control, y_control, phi, x_R, y_R, phi_R);
-        [v, omega] = compute_lyapunov(e1, e2, e3, v_ref, omega_ref, k1, k2, k3);
+        [e1, e2, e2_gt, e3] = compute_error(x_control, y_control, phi, x_R, y_R, phi_R, sensor_interval, sensor_data);
+        disp([e2, e2_gt]);
+        [v, omega] = compute_lyapunov(e1, e2_gt, e3, v_ref, omega_ref, k1, k2, k3);
         [v_l_ref, v_r_ref] = vomega2lr(v, omega, wheel_distance);
         
         % Apply PID
@@ -125,6 +129,7 @@ function main(v_ref)
         
         e1_array = [e1_array; double(e1)];
         e2_array = [e2_array; double(e2)];
+        e2_gt_array = [e2_gt_array; double(e2_gt)];
         e3_array = [e3_array; double(e3)];
         v_array = [v_array; v];
         omega_array = [omega_array; omega];
@@ -145,6 +150,13 @@ function main(v_ref)
     hold on
     grid on
     plot(x*t_samp, e2_array, '-', 'LineWidth', 1, 'Color', 'r');
+    xlabel('t(s)');
+    ylabel('e2 (mm)');
+    
+    figure
+    hold on
+    grid on
+    plot(x*t_samp, abs(e2_array - e2_gt_array), '-', 'LineWidth', 1, 'Color', 'k');
     xlabel('t(s)');
     ylabel('e2 (mm)');
     

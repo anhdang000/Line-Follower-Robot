@@ -14,16 +14,14 @@ function main(v_ref)
     r = 500;
 
     % Control
-    % --Lyapunov
+    % --Fuzzy
+    k1 = 0.01;
+    k2 = 0.0002;
+    k3 = 0.01;
+
     t_samp = 0.02;
     t_sensor = 0.0015;
     t_motor = t_samp - t_sensor;
-%     k1 = 0.01;
-%     k2 = 0.000015;
-%     k3 = 14;
-    k1 = 0.01;
-    k2 = 0.000008;
-    k3 = 20;
     omega_ref = v_ref/r;
     n_ref = omega_ref*60/(2*pi);
     v = 0;
@@ -62,6 +60,7 @@ function main(v_ref)
     e2_array = [];
     e2_gt_array = [];
     e3_array = [];
+    e3_gt_array = [];
     v_array = [];
     omega_array = [];
     v_left = [];
@@ -105,32 +104,34 @@ function main(v_ref)
         if is_exist == 0
             break
         end
-        [e1, e2, e2_gt, e3] = compute_error(x_control, y_control, phi, x_R, y_R, phi_R, sensor_interval, sensor_data);
-        disp([e2, e2_gt]);
+        if isempty(v_array) == 0
+            ds = v_array(end) * t_samp;
+            e2_prev = e2_array(end);
+        else
+            ds = 0;
+            e2_prev = 0;
+        end
+        [e1, e2, e2_gt, e3, e3_gt] = compute_error(x_control, y_control, phi, x_R, y_R, phi_R, sensor_interval, sensor_data, e2_prev, ds);
+        disp([e3, e3_gt]);
         [v, omega] = compute_lyapunov(e1, e2_gt, e3, v_ref, omega_ref, k1, k2, k3);
         [v_l_ref, v_r_ref] = vomega2lr(v, omega, wheel_distance);
         
-        % Apply PID
-        [sol_l, err2_l, int_l] = apply_PID(kp_l, ki_l, kd_l, err2_l, int_l, v_l_ref, v_l, t_motor, wheel_radius);
-        [sol_r, err2_r, int_r] = apply_PID(kp_r, ki_r, kd_r, err2_r, int_r, v_r_ref, v_r, t_motor, wheel_radius);
+        v_l = v_l_ref;
+        v_r = v_r_ref;
+        [v, omega] = lr2vomega(v_l, v_r, wheel_distance);
 
+        % Compute
         x_c_prev = x_c;
         y_c_prev = y_c;
-        for i = 1:length(t_seq)
-            v_l = rpm2v(deval(sol_l, t_seq(i)), wheel_radius);
-            v_r = rpm2v(deval(sol_r, t_seq(i)), wheel_radius);
-            [v, omega] = lr2vomega(v_l, v_r, wheel_distance);
-            
-            % Compute 
-            x_c = double(x_c + v*t_step*cos(phi));
-            y_c = double(y_c + v*t_step*sin(phi));
-            phi = double(phi + omega*t_step);
-        end
+        x_c = double(x_c + v*t_samp*cos(phi));
+        y_c = double(y_c + v*t_samp*sin(phi));
+        phi = double(phi + omega*t_samp);
         
         e1_array = [e1_array; double(e1)];
         e2_array = [e2_array; double(e2)];
         e2_gt_array = [e2_gt_array; double(e2_gt)];
         e3_array = [e3_array; double(e3)];
+        e3_gt_array = [e3_gt_array; double(e3_gt)];
         v_array = [v_array; v];
         omega_array = [omega_array; omega];
         v_left = [v_left; v2rpm(v_l, wheel_radius)];
@@ -156,35 +157,21 @@ function main(v_ref)
     figure
     hold on
     grid on
-    plot(x*t_samp, abs(e2_array - e2_gt_array), '-', 'LineWidth', 1, 'Color', 'k');
+    plot(x*t_samp, e2_array - e2_gt_array, '-', 'LineWidth', 1, 'Color', [0.1500 0.3250 0.0980]);
     xlabel('t(s)');
-    ylabel('e2 (mm)');
+    ylabel('e2 error (mm)');
+    
+    figure
+    hold on
+    grid on
+    plot(x*t_samp, e3_array - e3_gt_array, '-', 'LineWidth', 1, 'Color', [0.5500 0.5250 0.1980]);
+    xlabel('t(s)');
+    ylabel('e3 error (rad)');
     
     figure
     hold on
     grid on
     plot(x*t_samp, v_right, '-', 'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980]);
-    plot(x*t_samp, v_right_ref, '-', 'LineWidth', 1, 'Color', [0.5 0.2250 0.4280]);
-    legend('Right', 'Right ref');
-    
-    figure
-    hold on
-    grid on
     plot(x*t_samp, v_left, '-', 'LineWidth', 1, 'Color', [0.4660 0.6740 0.1880]);
-    plot(x*t_samp, v_left_ref, '-', 'LineWidth', 1, 'Color', [0.6660 0.2740 0.5880]);
-    legend('Left', 'Left ref');
-    
-    figure
-    hold on
-    grid on
-    plot(x(1:length(t_seq))*t_samp, v_right(1:length(t_seq)), '-', 'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980]);
-    plot(x(1:length(t_seq))*t_samp, v_right_ref(1:length(t_seq)), '-', 'LineWidth', 1, 'Color', [0.5 0.2250 0.4280]);
-    legend('Right', 'Right ref');
-    
-    figure
-    hold on
-    grid on
-    plot(x(1:length(t_seq))*t_samp, v_left(1:length(t_seq)), '-', 'LineWidth', 1, 'Color', [0.4660 0.6740 0.1880]);
-    plot(x(1:length(t_seq))*t_samp, v_left_ref(1:length(t_seq)), '-', 'LineWidth', 1, 'Color', [0.6660 0.2740 0.5880]);
-    legend('Left', 'Left ref');
+    legend('Right', 'Left');
 end

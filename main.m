@@ -15,9 +15,6 @@ function main(v_ref)
 
     % Control
     % --Fuzzy
-    k1 = 0.01;
-    k2 = 0.0002;
-    k3 = 0.01;
 
     t_samp = 0.02;
     t_sensor = 0.0015;

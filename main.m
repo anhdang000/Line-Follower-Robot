@@ -14,8 +14,10 @@ function main(v_ref)
     r = 500;
 
     % Control
-    % --Fuzzy
-
+    % --Lyapunov
+    k1 = 0.01;
+    k2 = 0.0002;
+    k3 = 0.01;
     t_samp = 0.02;
     t_sensor = 0.0015;
     t_motor = t_samp - t_sensor;

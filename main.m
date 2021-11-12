@@ -15,7 +15,8 @@ function main(v_ref)
 
     % Control
     % --Fuzzy
-
+    fuzzy_obj = readfis('fuzzy_configs');
+    
     t_samp = 0.02;
     t_sensor = 0.0015;
     t_motor = t_samp - t_sensor;
@@ -109,12 +110,9 @@ function main(v_ref)
             e2_prev = 0;
         end
         [e1, e2, e2_gt, e3, e3_gt] = compute_error(x_control, y_control, phi, x_R, y_R, phi_R, sensor_interval, sensor_data, e2_prev, ds);
-        disp([e3, e3_gt]);
-        [v, omega] = compute_lyapunov(e1, e2_gt, e3, v_ref, omega_ref, k1, k2, k3);
-        [v_l_ref, v_r_ref] = vomega2lr(v, omega, wheel_distance);
-        
-        v_l = v_l_ref;
-        v_r = v_r_ref;
+        v_out = evalfis([e2 e2-e2_prev], fuzzy_obj);
+        v_l = rpm2v(v_out(2), wheel_radius);
+        v_r = rpm2v(v_out(1), wheel_radius);
         [v, omega] = lr2vomega(v_l, v_r, wheel_distance);
 
         % Compute
@@ -133,8 +131,8 @@ function main(v_ref)
         omega_array = [omega_array; omega];
         v_left = [v_left; v2rpm(v_l, wheel_radius)];
         v_right = [v_right; v2rpm(v_r, wheel_radius)];
-        v_left_ref = [v_left_ref; v2rpm(v_l_ref, wheel_radius)];
-        v_right_ref = [v_right_ref; v2rpm(v_r_ref, wheel_radius)];
+%         v_left_ref = [v_left_ref; v2rpm(v_l_ref, wheel_radius)];
+%         v_right_ref = [v_right_ref; v2rpm(v_r_ref, wheel_radius)];
         phi_array = [phi_array; double(phi)];
         phi_R_array = [phi_R_array; double(phi_R)];
     end

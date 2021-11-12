@@ -23,31 +23,31 @@ MF5='ps':'trimf',[0 5 10]
 
 [Input2]
 Name='de2'
-Range=[-5 5]
+Range=[-15 15]
 NumMFs=3
-MF1='ns':'trimf',[-6 -5 0]
-MF2='ze':'trimf',[-5 0 5]
-MF3='ps':'trimf',[0 5 6]
+MF1='ns':'trapmf',[-18 -15 -10 0]
+MF2='ze':'trimf',[-15 0 15]
+MF3='ps':'trapmf',[0 10 15 18]
 
 [Output1]
-Name='v_l'
-Range=[5 15]
+Name='v_r'
+Range=[330 600]
 NumMFs=5
-MF1='nb':'trimf',[4 5 8]
-MF2='ze':'trimf',[8 10 12]
-MF3='pb':'trimf',[12 15 16]
-MF4='ns':'trimf',[5 8 10]
-MF5='ps':'trimf',[10 12 15]
+MF1='nb':'trapmf',[240 270 330 420]
+MF2='ze':'trimf',[420 465 510]
+MF3='pb':'trapmf',[510 600 660 675]
+MF4='ns':'trimf',[330 420 465]
+MF5='ps':'trimf',[465 510 600]
 
 [Output2]
-Name='v_r'
-Range=[5 15]
+Name='v_l'
+Range=[330 600]
 NumMFs=5
-MF1='nb':'trimf',[4 5 8]
-MF2='ze':'trimf',[8 10 12]
-MF3='pb':'trimf',[12 15 16]
-MF4='ns':'trimf',[5 8 10]
-MF5='ps':'trimf',[10 12 15]
+MF1='nb':'trapmf',[240 270 330 420]
+MF2='ze':'trimf',[420 465 510]
+MF3='pb':'trapmf',[510 600 660 675]
+MF4='ns':'trimf',[330 420 465]
+MF5='ps':'trimf',[465 510 600]
 
 [Rules]
 1 1, 1 3 (1) : 1

@@ -15,7 +15,8 @@ function main(v_ref)
 
     % Control
     % --Fuzzy
-    fuzzy_obj = readfis('fuzzy_configs');
+%     fuzzy_obj = readfis('fuzzy_configs');
+    fuzzy_obj = readfis('fuzzy_simplified');
     
     t_samp = 0.02;
     t_sensor = 0.0015;
@@ -110,7 +111,7 @@ function main(v_ref)
             e2_prev = 0;
         end
         [e1, e2, e2_gt, e3, e3_gt] = compute_error(x_control, y_control, phi, x_R, y_R, phi_R, sensor_interval, sensor_data, e2_prev, ds);
-        v_out = evalfis([e2 e2-e2_prev], fuzzy_obj);
+        v_out = evalfis(fuzzy_obj, [e2 e2-e2_prev]);
         v_l = rpm2v(v_out(2), wheel_radius);
         v_r = rpm2v(v_out(1), wheel_radius);
         [v, omega] = lr2vomega(v_l, v_r, wheel_distance);

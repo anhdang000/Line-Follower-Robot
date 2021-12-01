@@ -1,6 +1,8 @@
 function [e1, e2, e2_gt, e3, e3_gt] = compute_error(x_control, y_control, phi, x_R, y_R, phi_R, s, sensor_data, e2_prev, ds)
-    % Compute e2 from sensors
+    % Compute e2 ground-truth
     e2_gt = -(x_R - x_control)*sin(phi) + (y_R - y_control)*cos(phi);
+    
+    % Compute e2 from sensors
     weights = [-3 -2 -1 0 1 2 3];
     sensor_d = abs(weights*s - e2_gt);
     analogs = interp1(sensor_data(:, 1), sensor_data(:, 2), sensor_d, 'spline');
@@ -9,7 +11,7 @@ function [e1, e2, e2_gt, e3, e3_gt] = compute_error(x_control, y_control, phi, x
     else
         e2 = abs(sum(weights.*analogs)/sum(analogs));
     end
-    CR = calc_distances([x_control, y_control], [x_R, y_R]);
+    
     e1 = (x_R - x_control)*cos(phi) + (y_R - y_control)*sin(phi);
     e3_gt = phi_R - phi;
     if e3_gt > 6

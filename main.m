@@ -111,7 +111,6 @@ function main(v_ref)
             e2_prev = 0;
         end
         [e1, e2, e2_gt, e3, e3_gt] = compute_error(x_control, y_control, phi, x_R, y_R, phi_R, sensor_interval, sensor_data, e2_prev, ds);
-        disp([e3, e3_gt]);
         [v, omega] = compute_lyapunov(e1, e2_gt, e3, v_ref, omega_ref, k1, k2, k3);
         [v_l_ref, v_r_ref] = vomega2lr(v, omega, wheel_distance);
         

@@ -19,8 +19,6 @@ function main(v_ref)
     k2 = 0.0002;
     k3 = 0.01;
     t_samp = 0.02;
-    t_sensor = 0.0015;
-    t_motor = t_samp - t_sensor;
     omega_ref = v_ref/r;
     n_ref = omega_ref*60/(2*pi);
     v = 0;
@@ -28,11 +26,6 @@ function main(v_ref)
     [v_l, v_r] = vomega2lr(v, omega, wheel_distance);
     
     % --PID Motor
-    % response
-    num_dt = 20;
-    t_seq = linspace(0, t_motor, num_dt);
-    t_step = t_seq(2) - t_seq(1);
-    
     % left
     kp_l = 0.02;
     ki_l = 0.06;

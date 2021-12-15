@@ -4,8 +4,8 @@ function main(v_ref)
     % Robot
     rbt_width = 200;
     rbt_length = 200;
-    wheel_radius = 85/2;
-    wheel_distance = 170;
+    wheel_radius = 65/2;
+    wheel_distance = 163;
     sensor_interval = 17;
     n_sensors = 7;
     load('sensor_data.mat', 'sensor_data');

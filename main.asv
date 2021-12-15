@@ -116,7 +116,7 @@ function main(v_ref)
             v_r = rpm2v(N_r(end), wheel_radius);
             
             [v, omega] = lr2vomega(v_l_ref, v_r_ref, wheel_distance);
-            [v, omega] = lr2vomega(v_l, v_r, wheel_distance);
+            [v, omega] = lr2vomega(v_l, v_r_ref, wheel_distance);
             % Compute 
             x_c = double(x_c + v*t_motor_samp*cos(phi));
             y_c = double(y_c + v*t_motor_samp*sin(phi));
@@ -147,14 +147,14 @@ function main(v_ref)
     hold on
     grid on
     plot(x*t_samp, e2_array, '-', 'LineWidth', 1, 'Color', 'r');
-    xlabel('t (s)');
+    xlabel('t(s)');
     ylabel('e2 (mm)');
     
     figure
     hold on
     grid on
     plot(x*t_samp, abs(e2_array - e2_gt_array), '-', 'LineWidth', 1, 'Color', 'k');
-    xlabel('t (s)');
+    xlabel('t(s)');
     ylabel('error (mm)');
     
     figure
@@ -162,8 +162,6 @@ function main(v_ref)
     grid on
     plot(x*t_samp, v_right_ref, '-', 'LineWidth', 1, 'Color', [0.5 0.2250 0.4280]);
     plot(x*t_samp, v_right, '-', 'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980]);
-    xlabel('t (s)');
-    ylabel('RPM');
     legend('Right ref', 'Right');
     
     figure
@@ -171,7 +169,5 @@ function main(v_ref)
     grid on
     plot(x*t_samp, v_left_ref, '-', 'LineWidth', 1, 'Color', [0.6660 0.2740 0.5880]);
     plot(x*t_samp, v_left, '-', 'LineWidth', 1, 'Color', [0.4660 0.6740 0.1880]);
-    xlabel('t (s)');
-    ylabel('RPM');
     legend('Left ref', 'Left');
 end

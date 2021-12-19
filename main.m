@@ -18,12 +18,17 @@ function main(v_ref)
     t_samp = 0.02;
     t_motor_samp = 0.005;
     t_steps = [0:t_motor_samp:t_samp];
-%     k1 = 0.01;
-%     k2 = 0.000015;
-%     k3 = 14;
+    
+    % for no-PID
+    k1 = 0.01;
+    k2 = 0.0002;
+    k3 = 20;
+    
+    % for PID
     k1 = 0.01;
     k2 = 0.00015;
     k3 = 25;
+    
     omega_ref = v_ref/r;
     n_ref = omega_ref*60/(2*pi);
     v = 0;
@@ -115,7 +120,7 @@ function main(v_ref)
             v_l = rpm2v(N_l(end), wheel_radius);
             v_r = rpm2v(N_r(end), wheel_radius);
             
-            [v, omega] = lr2vomega(v_l_ref, v_r_ref, wheel_distance);
+%             [v, omega] = lr2vomega(v_l_ref, v_r_ref, wheel_distance);
             [v, omega] = lr2vomega(v_l, v_r, wheel_distance);
             % Compute 
             x_c = double(x_c + v*t_motor_samp*cos(phi));
@@ -174,4 +179,13 @@ function main(v_ref)
     xlabel('t (s)');
     ylabel('RPM');
     legend('Left ref', 'Left');
+    
+    figure
+    hold on
+    grid on
+    plot(x*t_samp, v_right_ref, '-', 'LineWidth', 1, 'Color', [0.8500 0.3250 0.0980]);
+    plot(x*t_samp, v_left_ref, '-', 'LineWidth', 1, 'Color', [0.4660 0.6740 0.1880]);
+    xlabel('t (s)');
+    ylabel('RPM');
+    legend('Right', 'Left');
 end
